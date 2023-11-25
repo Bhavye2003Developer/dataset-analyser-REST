@@ -13,9 +13,12 @@ FILE_PATH = os.path.join(UPLOADS_DIR, FILE_NAME)
 ANALYSED_FILE_PATH = os.path.join(ANALYSIS_DIR, "analysis.html")
 
 def analyse_data(file_path):
-    df = pd.read_csv(file_path)
-    profile = ProfileReport(df, title="Profiling Report")
-    html_file = profile.to_file(ANALYSED_FILE_PATH)
+    try:
+        df = pd.read_csv(file_path)
+        profile = ProfileReport(df, title="Profiling Report")
+        profile.to_file(ANALYSED_FILE_PATH)
+    except Exception as e:
+        JsonResponse({"status":"error", "error":e})
 
 @csrf_exempt
 def home(request):
@@ -41,6 +44,6 @@ def home(request):
             except Exception as e:
                 return JsonResponse({'status': "error", 'error': str(e)}, status=500)
         else:
-            return JsonResponse({'error': 'No file uploaded'}, status=400)
+            return JsonResponse({'status': "error",'error': 'No file uploaded'}, status=400)
     else:
-        return JsonResponse({'error': 'Only POST requests are allowed'}, status=405)
+        return JsonResponse({'status': "error",'error': 'Only POST requests are allowed'}, status=405)
