@@ -2,23 +2,32 @@ import os
 import uuid
 import base64
 import pandas as pd
+import logging
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from ydata_profiling import ProfileReport
+from dataset_profiler.settings import BASE_DIR
 
-UPLOADS_DIR = "./uploads/"
-ANALYSIS_DIR = "./analysis/"
+# Set up logging
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+
+UPLOADS_DIR = f"{BASE_DIR}/uploads/"
+ANALYSIS_DIR = f"{BASE_DIR}/analysis/"
 FILE_NAME = "data.csv"
 FILE_PATH = os.path.join(UPLOADS_DIR, FILE_NAME)
 ANALYSED_FILE_PATH = os.path.join(ANALYSIS_DIR, "analysis.html")
 
+# Ensure directories exist
+for directory in [UPLOADS_DIR, ANALYSIS_DIR]:
+    os.makedirs(directory, exist_ok=True)
+    logger.debug(f"Directory created: {directory}")
+
 def analyse_data(file_path):
-    try:
-        df = pd.read_csv(file_path)
-        profile = ProfileReport(df, title="Profiling Report")
-        profile.to_file(ANALYSED_FILE_PATH)
-    except Exception as e:
-        JsonResponse({"status":"error", "error":e})
+    df = pd.read_csv(file_path)
+    profile = ProfileReport(df, title="Profiling Report")
+    html_file = profile.to_file(ANALYSED_FILE_PATH)
+    logger.debug(f"Analysis file saved at: {ANALYSED_FILE_PATH}")
 
 @csrf_exempt
 def home(request):
@@ -31,7 +40,9 @@ def home(request):
                 file_path = os.path.join(UPLOADS_DIR, unique_filename)
                 with open(file_path, 'wb') as destination:
                     destination.write(request.body)
-                
+
+                logger.debug(f"Uploaded file saved at: {file_path}")
+
                 # Analyze the uploaded file
                 analyse_data(file_path)
 
@@ -44,6 +55,6 @@ def home(request):
             except Exception as e:
                 return JsonResponse({'status': "error", 'error': str(e)}, status=500)
         else:
-            return JsonResponse({'status': "error",'error': 'No file uploaded'}, status=400)
+            return JsonResponse({'status': "error", 'error': 'No file uploaded'}, status=400)
     else:
-        return JsonResponse({'status': "error",'error': 'Only POST requests are allowed'}, status=405)
+        return JsonResponse({'status': "error", 'error': 'Only POST requests are allowed'}, status=405)
