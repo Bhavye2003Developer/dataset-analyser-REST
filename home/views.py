@@ -1,8 +1,6 @@
 import os
 import uuid
 import base64
-import ipywidgets
-import numpy as np
 import pandas as pd
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
