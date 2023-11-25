@@ -42,7 +42,6 @@ def home(request):
                 return JsonResponse({'status': "error", 'error': 'File not found'}, status=404)
             except Exception as e:
                 return JsonResponse({'status': "error", 'error': str(e)}, status=500)
-
         else:
             return JsonResponse({'error': 'No file uploaded'}, status=400)
     else:
