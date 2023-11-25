@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-fcf#gd2_yeaaix6wnq26f36ovo5hk*7j7yv-@+-kn0(30%71q!
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['.vercel.app', '.now.sh']
+ALLOWED_HOSTS = ['.vercel.app', '.now.sh', "*"]
 
 
 # Application definition
@@ -69,18 +69,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'dataset_profiler.wsgi.application'
-
-
-# Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
